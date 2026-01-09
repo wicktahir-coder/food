@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FoodCloud Premium Menu</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --primary: #ff4757;
+    --bg: #f7f9fc;
+    --card: #ffffff;
+    --text: #1e272e;
+    --muted: #777;
+    --shadow: rgba(0,0,0,0.08);
+}
+
+[data-theme="dark"] {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --shadow: rgba(0,0,0,0.4);
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    transition: 0.3s;
+}
+
+/* HEADER */
+header {
+    background: var(--card);
+    padding: 14px 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+.logo {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.header-actions {
+    display: flex;
+    gap: 10px;
+}
+
+button {
+    font-family: inherit;
+    border: none;
+    cursor: pointer;
+}
+
+.admin-trigger {
+    background: var(--text);
+    color: var(--bg);
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-weight: 600;
+}
+
+.theme-toggle {
+    background: transparent;
+    font-size: 1.2rem;
+}
+
+/* CONTAINER */
+.container {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 14px;
+}
+
+/* CATEGORY */
+.category-block { margin-bottom: 40px; }
+
+.category-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    border-bottom: 3px solid var(--primary);
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+/* GRID */
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+@media (min-width: 600px) {
+    .menu-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (min-width: 992px) {
+    .menu-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* CARD */
+.food-card {
+    background: var(--card);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px var(--shadow);
+    transition: 0.25s;
+}
+
+.food-card:hover {
+    transform: translateY(-6px);
+}
+
+/* IMAGE */
+.img-container {
+    height: 140px;
+    position: relative;
+}
+
+.food-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* PRICE */
+.price-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: var(--primary);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+/* DETAILS */
+.food-details {
+    padding: 12px;
+}
+
+.food-details h4 {
+    margin: 0 0 6px;
+    font-size: 0.95rem;
+}
+
+.food-details p {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--muted);
+}
+
+/* SKELETON */
+.skeleton-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.skeleton {
+    height: 200px;
+    border-radius: 16px;
+    background: linear-gradient(
+        90deg,
+        #e5e7eb 25%,
+        #f3f4f6 37%,
+        #e5e7eb 63%
+    );
+    background-size: 400% 100%;
+    animation: shimmer 1.2s infinite;
+}
+
+@keyframes shimmer {
+    0% { background-position: 100% 0; }
+    100% { background-position: -100% 0; }
+}
+
+/* MODAL */
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(6px);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: var(--card);
+    width: 92%;
+    max-width: 420px;
+    padding: 30px;
+    border-radius: 26px;
+}
+
+/* FORM */
+input, select, textarea {
+    width: 100%;
+    padding: 14px;
+    margin: 10px 0;
+    border-radius: 12px;
+    border: none;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.save-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--primary);
+    color: white;
+    border-radius: 12px;
+    font-weight: 700;
+}
+
+#preview-box {
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 12px;
+    display: none;
+    margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">FoodCloud.</div>
+    <div class="header-actions">
+        <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+        <button class="admin-trigger" onclick="openLogin()">Admin</button>
+    </div>
+</header>
+
+<div class="container" id="menu-root">
+    <div class="skeleton-grid">
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+    </div>
+</div>
+
+<!-- LOGIN MODAL -->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <h2>Admin Access</h2>
+        <input type="text" id="user" placeholder="Username">
+        <input type="password" id="pass" placeholder="Password">
+        <button class="save-btn" onclick="checkAuth()">Login</button>
+    </div>
+</div>
+
+<!-- FORM MODAL -->
+<div id="formModal" class="modal">
+    <div class="modal-content">
+        <h2>Add Dish</h2>
+        <form id="dishForm">
+            <select id="fCat">
+                <option>Break Fast</option>
+                <option>Snacks</option>
+                <option>Rice Varieties</option>
+                <option>Chinese</option>
+                <option>Sides / Gravy</option>
+            </select>
+
+            <input id="fName" placeholder="Dish Name" required>
+            <input id="fPrice" type="number" placeholder="Price" required>
+            <textarea id="fDesc" placeholder="Description"></textarea>
+
+            <input type="file" accept="image/*" onchange="handlePreview(this)">
+            <img id="preview-box">
+
+            <button class="save-btn">Save</button>
+        </form>
+    </div>
+</div>
+
+<script>
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw_wz_F-KAQbFNhDUk06sUmmrCrg9w_BCgkxP8wDkhveQw2yupI-e9XsrbKLXG-cZYh/exec";
+
+const menuRoot = document.getElementById("menu-root");
+const previewImg = document.getElementById("preview-box");
+let selectedBase64 = "";
+
+/* THEME */
+function toggleTheme() {
+    const theme = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+}
+document.documentElement.setAttribute("data-theme", localStorage.getItem("theme") || "light");
+
+/* LOAD MENU */
+async function loadMenu() {
+    try {
+        const res = await fetch(WEB_APP_URL);
+        const data = await res.json();
+        menuRoot.innerHTML = "";
+
+        if (!data || data.length === 0) {
+            menuRoot.innerHTML = "<h3>No dishes available</h3>";
+            return;
+        }
+
+        const categories = [
+            "Break Fast",
+            "Snacks",
+            "Rice Varieties",
+            "Chinese",
+            "Sides / Gravy"
+        ];
+
+        categories.forEach(cat => {
+            const items = data.filter(d => d.category === cat);
+            if (!items.length) return;
+
+            const block = document.createElement("div");
+            block.className = "category-block";
+            block.innerHTML = `<div class="category-title">${cat}</div>`;
+
+            const grid = document.createElement("div");
+            grid.className = "menu-grid";
+
+            items.forEach(item => {
+                const imgSrc = item.image && item.image.trim()
+                    ? item.image
+                    : "https://via.placeholder.com/300x200?text=No+Image";
+
+                grid.innerHTML += `
+                <div class="food-card">
+                    <div class="img-container">
+                        <span class="price-badge">₹${item.price}</span>
+                        <img class="food-img" loading="lazy" src="${imgSrc}">
+                    </div>
+                    <div class="food-details">
+                        <h4>${item.name}</h4>
+                        ${item.description ? `<p>${item.description}</p>` : ""}
+                    </div>
+                </div>`;
+            });
+
+            block.appendChild(grid);
+            menuRoot.appendChild(block);
+        });
+
+    } catch (err) {
+        console.error(err);
+        menuRoot.innerHTML = "<h3>Error loading menu</h3>";
+    }
+}
+
+/* IMAGE PREVIEW */
+function handlePreview(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = e => {
+        selectedBase64 = e.target.result;
+        previewImg.src = selectedBase64;
+        previewImg.style.display = "block";
+    };
+    reader.readAsDataURL(file);
+}
+
+/* ADMIN */
+function openLogin() {
+    document.getElementById("loginModal").style.display = "flex";
+}
+
+function checkAuth() {
+    if (user.value === "admin" && pass.value === "pass123") {
+        loginModal.style.display = "none";
+        formModal.style.display = "flex";
+    } else {
+        alert("Wrong credentials");
+    }
+}
+
+/* SUBMIT */
+dishForm.onsubmit = async e => {
+    e.preventDefault();
+
+    await fetch(WEB_APP_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            category: fCat.value,
+            name: fName.value,
+            price: fPrice.value,
+            description: fDesc.value,
+            image: selectedBase64
+        })
+    });
+
+    alert("Dish added successfully");
+    location.reload();
+};
+
+loadMenu();
+</script>
+
+</body>
+</html>
