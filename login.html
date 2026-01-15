@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - FoodCloud</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#ff4757;--primary-dark:#e63946;--card:#1a1f35;--text:#f1f5f9;--muted:#94a3b8;--accent:#06b6d4}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:rgba(255,71,87,0.2)}
+body{font-family:'Outfit',-apple-system,BlinkMacSystemFont,sans-serif;background:linear-gradient(135deg,#0a0e1a 0%,#1a1f35 100%);background-attachment:fixed;color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;position:relative;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;width:500px;height:500px;background:radial-gradient(circle,rgba(255,71,87,0.2),transparent);top:-250px;right:-250px;pointer-events:none;animation:float 8s ease-in-out infinite}
+body::after{content:'';position:fixed;width:400px;height:400px;background:radial-gradient(circle,rgba(6,182,212,0.15),transparent);bottom:-200px;left:-200px;pointer-events:none;animation:float 10s ease-in-out infinite reverse}
+@keyframes float{0%,100%{transform:translate(0,0) rotate(0deg)}33%{transform:translate(30px,-30px) rotate(5deg)}66%{transform:translate(-20px,20px) rotate(-5deg)}}
+.container{max-width:450px;width:100%;position:relative;z-index:1}
+.auth-box{background:var(--card);border-radius:24px;padding:40px 30px;border:1px solid rgba(255,255,255,0.1);box-shadow:0 25px 50px rgba(0,0,0,0.5);animation:slideUp 0.5s cubic-bezier(0.175,0.885,0.32,1.275)}
+@keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+.logo{text-align:center;font-size:2.5rem;font-weight:700;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;letter-spacing:-1px}
+.subtitle{text-align:center;color:var(--muted);margin-bottom:30px;font-size:0.95rem}
+.form-group{margin-bottom:20px}
+label{display:block;margin-bottom:8px;color:var(--text);font-weight:600;font-size:0.9rem}
+input{width:100%;padding:14px 16px;background:rgba(10,14,26,0.8);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:white;font-family:'Outfit',sans-serif;font-size:0.95rem;transition:all 0.3s ease;-webkit-appearance:none}
+input:focus{outline:none;border-color:var(--primary);background:rgba(10,14,26,1);box-shadow:0 0 0 3px rgba(255,71,87,0.1)}
+input::placeholder{color:rgba(148,163,184,0.5)}
+.btn-primary{width:100%;padding:14px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:white;border:none;border-radius:12px;font-weight:700;font-size:1rem;cursor:pointer;transition:all 0.3s ease;box-shadow:0 4px 15px rgba(255,71,87,0.3);margin-top:10px;font-family:'Outfit',sans-serif;min-height:48px}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(255,71,87,0.4)}
+.btn-primary:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+.divider{text-align:center;color:var(--muted);margin:25px 0;position:relative}
+.divider::before,.divider::after{content:'';position:absolute;top:50%;width:40%;height:1px;background:rgba(255,255,255,0.1)}
+.divider::before{left:0}.divider::after{right:0}
+.link-text{text-align:center;color:var(--muted);font-size:0.9rem;margin-top:20px}
+.link-text a{color:var(--accent);text-decoration:none;font-weight:600;transition:color 0.3s}
+.link-text a:hover{color:var(--primary)}
+.alert{padding:12px 16px;border-radius:10px;margin-bottom:20px;font-size:0.9rem;display:none;animation:slideDown 0.3s ease}
+@keyframes slideDown{from{transform:translateY(-10px);opacity:0}to{transform:translateY(0);opacity:1}}
+.alert-error{background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:#fca5a5}
+.alert-success{background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:#86efac}
+.email-hint{font-size:0.8rem;color:var(--accent);margin-top:6px}
+.loading{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.6s linear infinite;margin-right:8px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:480px){.auth-box{padding:30px 20px}.logo{font-size:2rem}input{padding:12px 14px;font-size:0.9rem}}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="auth-box">
+    <div class="logo">FoodCloud.</div>
+    <p class="subtitle">Welcome back! Please login</p>
+    
+    <div class="alert alert-error" id="errorMsg"></div>
+    <div class="alert alert-success" id="successMsg"></div>
+    
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="email">College Email</label>
+        <input type="email" id="email" placeholder="your.name@americancollege.edu.in" required>
+        <div class="email-hint">⚠️ Use your @americancollege.edu.in email</div>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter your password" required>
+      </div>
+      
+      <button type="submit" class="btn-primary" id="loginBtn">Login</button>
+    </form>
+    
+    <div class="divider">or</div>
+    
+    <div class="link-text">
+      Don't have an account? <a href="register.html">Register here</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// REPLACE WITH YOUR AUTHENTICATION APPS SCRIPT URL
+const AUTH_API_URL = "https://script.google.com/macros/s/AKfycbzGJ_K2Lxe8Lm8Kf0DP2ET6wmMBUaXq2j0g_bra1BCZaHjezjIQQwZVNzKNJiiKt3lGDQ/exec";
+
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  const email = document.getElementById('email').value.trim().toLowerCase();
+  const password = document.getElementById('password').value;
+  const loginBtn = document.getElementById('loginBtn');
+  
+  hideAlerts();
+  
+  if (!email || !password) {
+    showError('Please fill in all fields');
+    return;
+  }
+  
+  if (!email.endsWith('@americancollege.edu.in')) {
+    showError('Only @americancollege.edu.in email addresses are allowed');
+    return;
+  }
+  
+  loginBtn.disabled = true;
+  loginBtn.innerHTML = '<span class="loading"></span>Logging in...';
+  
+  try {
+    const response = await fetch(AUTH_API_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain'},
+      body: JSON.stringify({
+        action: 'login',
+        email: email,
+        password: password
+      })
+    });
+    
+    const result = await response.json();
+    
+    if (result.status === 'success') {
+      showSuccess(result.message + '! Redirecting...');
+      
+      localStorage.setItem('foodcloud_user', JSON.stringify({
+        name: result.name,
+        email: result.email,
+        isAdmin: result.isAdmin || false,
+        loggedIn: true
+      }));
+      
+      setTimeout(() => {
+        if (result.isAdmin) {
+          window.location.href = 'admin.html';
+        } else {
+          window.location.href = 'menu.html';
+        }
+      }, 1000);
+    } else {
+      showError(result.message);
+      loginBtn.disabled = false;
+      loginBtn.innerHTML = 'Login';
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+    showError('Login failed. Please check your connection and try again.');
+    loginBtn.disabled = false;
+    loginBtn.innerHTML = 'Login';
+  }
+});
+
+function showError(message) {
+  const errorMsg = document.getElementById('errorMsg');
+  errorMsg.textContent = message;
+  errorMsg.style.display = 'block';
+}
+
+function showSuccess(message) {
+  const successMsg = document.getElementById('successMsg');
+  successMsg.textContent = message;
+  successMsg.style.display = 'block';
+}
+
+function hideAlerts() {
+  document.getElementById('errorMsg').style.display = 'none';
+  document.getElementById('successMsg').style.display = 'none';
+}
+</script>
+
+</body>
+</html>
